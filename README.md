@@ -1,7 +1,6 @@
 # onlineshop-backend-JDBC
 Onlineshop Backend with JDBC
 
-
 ## Rest API
 
 ### Product
@@ -40,7 +39,7 @@ Onlineshop Backend with JDBC
 |---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HTTP Methode  | HTTP Post                                                                                                                                                                                                                |
 | Endpoints     | product/addStock <br> http://localhost:8080/product/addStock                                                                                                                                                             |
-| Payload       | {"id"="1", "amount"="100", "productId":"1"}                                                                                                                                                                              |
+| Payload (JSON-Format)       | {"id"="1", "amount"="100", "productId":"1"}                                                                                                                                                                              |
 | Response Code | Stock added to product: HTTP Status Code 200 <br> Product not found: HTTP Status Code 404 <br> Missmatch productId - storageId: HTTPS Status Code 400 <br>Exception: HTTP Status Code 500 |
 | Response      | {"id":"1" "storageAmount":"200"}                                                                                                                                                                                                   |
 
@@ -50,7 +49,7 @@ Onlineshop Backend with JDBC
 |---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HTTP Methode  | HTTP POST                                                                                                                                                                                                                |
 | Endpoints     | product/removeStock <br> http://localhost:8080/product/removeStock                                                                                                                                                             |
-| Payload       | {"id"="1", "amount"="100", "productId":"1"}                                                                                                                                                                              |
+| Payload (JSON-Format)       | {"id"="1", "amount"="100", "productId":"1"}                                                                                                                                                                              |
 | Response Code | Stock removed from product: HTTP Status Code 200 <br> Storage not found: HTTP Status Code 404 <br> Product not found: HTTP Status Code 404 <br> Missmatch productId - storageId: HTTPS Status Code 400 <br> Amount of Stock to low: HTTPS Status Code 400 <br> Exception: HTTP Status Code 500 |
 | Response      | none                                                                                                                                                                                                                     |
 
@@ -59,11 +58,61 @@ Onlineshop Backend with JDBC
 | Description   | Get total stock amount for Product                                                                                                                                                                                                |
 |---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HTTP Methode  | HTTP GET                                                                                                                                                                                                                |
-| Endpoints     | getTotalStockForProduct/{productId} <br> http://localhost:8080/product/getTotalStockForProduct/{productId}                                                                                                                                                |
+| Endpoints     | product/getTotalStockForProduct/{productId} <br> http://localhost:8080/product/getTotalStockForProduct/{productId}                                                                                                                                                |
 | Payload       | None                                                                                                                                                                         |
 | Response Code | Stock removed from product: HTTP Status Code 200 <br> Product not found: HTTP Status Code 404 <br> Exception: HTTP Status Code 500 |
 | Response      | {"totalStock":"200"}                                                                                                                                                                                                                     |
 
 
 ### Order
+
+<br>
+
+| Description   | Create Order                                                                                                                                                                                             |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| HTTP Methode  | HTTP POST                                                                                                                                                                                                                |
+| Endpoints     | order/create <br> http://localhost:8080/order/create                                                                                                                                                |
+| Payload       | None                                                                                                                                                                         |
+| Response Code | Order created: HTTP Status Code 201 <br> Exception: HTTP Status Code 500 |
+| Response      | {"orderId":"1"}         
+
+<br>
+
+| Description   | Add Product to Order                                                                                                                                                                                             |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| HTTP Methode  | HTTP POST                                                                                                                                                                                                                |
+| Endpoints     | order/addProduct <br> http://localhost:8080/order/addProduct                                                                                                                                                |
+| Payload (JSON-Format)       | {"amount":"200", "orderId":"1", "productId":"1"}                                                                                                                                                                         |
+| Response Code | Order created: HTTP Status Code 201 <br> Product not found: HTTP Status Code 404 <br> Order not found / closed: HTTP Status Code 400 <br> Exception: HTTP Status Code 500 |
+| Response      | {"positionId":"1", "totalAmpount":"400"}     
+
+<br>
+
+| Description   | Remove Product from Order                                                                                                                                                                                             |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| HTTP Methode  | HTTP POST                                                                                                                                                                                                                |
+| Endpoints     | order/removeProduct/{positionId} <br> http://localhost:8080/order/removeProduct/{positionId}                                                                                                                                                |
+| Payload       | None                                                                                                                                                                 |
+| Response Code | Product removed: HTTP Status Code 200 <br> Order not found / closed: HTTP Status Code 400 <br> Position not found: HTTP Status Code 400 <br> Exception: HTTP Status Code 500 |
+| Response      | None    
+
+<br>
+
+| Description   | Delete Order                                                                                                                                                                                             |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| HTTP Methode  | HTTP DELETE                                                                                                                                                                                                                |
+| Endpoints     | order/deleteOrder/{orderId} <br> http://localhost:8080/order/deleteOrder/{orderId}                                                                                                                                                |
+| Payload (JSON-Format)       | {"amount":"200", "orderId":"1", "productId":"1"}                                                                                                                                                                         |
+| Response Code | Order deleted: HTTP Status Code 200 <br> Order not found / closed: HTTP Status Code 400 <br> Exception: HTTP Status Code 500 |
+| Response      | None
+
+<br>
+
+| Description   | Submit Order                                                                                                                                                                                             |
+|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| HTTP Methode  | HTTP Post                                                                                                                                                                                                                |
+| Endpoints     | order/submitOrder/{orderId} <br> http://localhost:8080/order/submitOrder/{orderId}                                                                                                                                               |
+| Payload       | None                                                                                                                                                                       |
+| Response Code | Order submitted: HTTP Status Code 200 <br> Order not found / closed: HTTP Status Code 400 <br> Not enough Stock for Products: HTTP Status Code 400<br> Exception: HTTP Status Code 500 |
+| Response      | None
 
