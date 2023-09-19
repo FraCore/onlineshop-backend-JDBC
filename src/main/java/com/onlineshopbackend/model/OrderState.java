@@ -1,4 +1,4 @@
-package com.onlineshopbackendjdbc.model;
+package com.onlineshopbackend.model;
 
 public enum OrderState {
     OPEN,

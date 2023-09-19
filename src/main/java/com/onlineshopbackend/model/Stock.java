@@ -1,27 +1,21 @@
-package com.onlineshopbackendjdbc.model;
-
+package com.onlineshopbackend.model;
 
 import jakarta.validation.constraints.NotNull;
 
-
-public class Storage {
-
+public class Stock {
     @NotNull
     private Integer storage_id;
 
     @NotNull
-    private Integer storage_stock;
+    private Integer amount;
 
     @NotNull
     private Integer product_id;
 
-    public Storage(Integer storage_id, Integer storage_stock, Integer product_id) {
+    public Stock(Integer storage_id, Integer amount, Integer product_id) {
         this.storage_id = storage_id;
-        this.storage_stock = storage_stock;
+        this.amount = amount;
         this.product_id = product_id;
-    }
-
-    public Storage() {
     }
 
     public Integer getStorage_id() {
@@ -32,12 +26,12 @@ public class Storage {
         this.storage_id = storage_id;
     }
 
-    public Integer getStorage_stock() {
-        return storage_stock;
+    public Integer getAmount() {
+        return amount;
     }
 
-    public void setStorage_stock(Integer storage_stock) {
-        this.storage_stock = storage_stock;
+    public void setAmount(Integer amount) {
+        this.amount = amount;
     }
 
     public Integer getProduct_id() {
@@ -47,5 +41,6 @@ public class Storage {
     public void setProduct_id(Integer product_id) {
         this.product_id = product_id;
     }
-}
 
+
+}

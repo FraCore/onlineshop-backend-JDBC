@@ -1,4 +1,4 @@
-package com.onlineshopbackendjdbc.database;
+package com.onlineshopbackend.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

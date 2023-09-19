@@ -1,4 +1,4 @@
-package com.onlineshopbackendjdbc;
+package com.onlineshopbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,5 +9,4 @@ public class OnlineshopBackendJdbcApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OnlineshopBackendJdbcApplication.class, args);
 	}
-
 }
