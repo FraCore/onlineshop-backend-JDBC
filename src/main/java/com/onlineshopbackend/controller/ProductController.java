@@ -38,22 +38,22 @@ public class ProductController {
     public @ResponseBody ResponseEntity<String> addNewProduct(@Valid @RequestBody Product product) {
         try {
             if(isProductPresent(product.getId())) {
-                return new ResponseEntity<>("Product already exists", HttpStatus.CONFLICT);
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
             Integer productId = productJdbcRepository.insert(product);
             String jsonResponse = String.format("{\"id\": %d}", productId);
             return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
         }catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
-            return new ResponseEntity<>(String.format("SQL Error %s has occured", sqlException.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PutMapping(path="/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path="/update", consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> updateProduct(@Valid @RequestBody Product product) {
         try {
             if(!isProductPresent(product.getId())) {
-                return new ResponseEntity<>(String.format("Product with id: %d not found", product.getId()), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             product.setId(product.getId());
             productJdbcRepository.update(product);
@@ -68,31 +68,31 @@ public class ProductController {
     public @ResponseBody ResponseEntity<String> updateProduct(@PathVariable Integer productId) {
         try {
             if(!isProductPresent(productId)) {
-                return new ResponseEntity<>(String.format("Product with id: %d not found", productId), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             if(positionJdbRepository.isProductPresentInAnyPosition(productId)) {
-                return new ResponseEntity<>(String.format("Product with id: %d is a position of an order and cannot be deleted", productId), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             if(storageJdbcRepository.getTotalStockForProduct(productId) > 0) {
-                return new ResponseEntity<>(String.format("Product with id: %d has stock and cannot be deleted", productId), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             productJdbcRepository.delete(productId);
-            return new ResponseEntity<>("Product successfully deleted", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
-            return new ResponseEntity<>(String.format("SQL Error %s has occured", sqlException.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping(path="/addStock", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addProductStock(@Valid @RequestBody Stock stock) {
         try {
-            if (!isProductPresent(stock.getProduct_id())) {
-                return new ResponseEntity<>(String.format("No Product with productId: %d found", stock.getProduct_id()), HttpStatus.NOT_FOUND);
+            if (!isProductPresent(stock.getProductId())) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            Storage storage = storageJdbcRepository.findStorageById(stock.getStorage_id());
+            Storage storage = storageJdbcRepository.findStorageById(stock.getId());
             if(storage != null) {
-                return increaseExistingStorage(stock.getProduct_id(), stock.getStorage_id(), stock, storage);
+                return increaseExistingStorage(stock.getProductId(), stock.getId(), stock, storage);
             } else {
                 return createNewStorage(stock);
             }
@@ -105,15 +105,15 @@ public class ProductController {
     @DeleteMapping(path="/removeStock", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> removeProductStock(@Valid @RequestBody Stock stock) {
         try {
-            if (!isProductPresent(stock.getProduct_id())) {
-                return new ResponseEntity<>(String.format("No Product with productId: %d found", stock.getProduct_id()), HttpStatus.NOT_FOUND);
+            if (!isProductPresent(stock.getProductId())) {
+                return new ResponseEntity<>(String.format("No Product with productId: %d found", stock.getProductId()), HttpStatus.NOT_FOUND);
             }
-            Storage storage = storageJdbcRepository.findStorageById(stock.getStorage_id());
+            Storage storage = storageJdbcRepository.findStorageById(stock.getId());
             if(storage != null) {
-                return decreaseExistingStorage(stock.getProduct_id(), stock.getStorage_id(), stock, storage);
+                return decreaseExistingStorage(stock.getProductId(), stock.getId(), stock, storage);
             } else {
                 return new ResponseEntity<>(String.format("No Storage with id: %d",
-                        stock.getStorage_id()), HttpStatus.BAD_REQUEST);
+                        stock.getId()), HttpStatus.BAD_REQUEST);
             }
         } catch (SQLException sqlException) {
             logger.error("Error fetching/updating storage: " + sqlException.getMessage());
@@ -182,7 +182,7 @@ public class ProductController {
 
         private ResponseEntity<String> createNewStorage(Stock stock) {
         try {
-            Storage storage = new Storage(stock.getStorage_id(), stock.getAmount(), stock.getProduct_id());
+            Storage storage = new Storage(stock.getId(), stock.getAmount(), stock.getProductId());
             Integer generatedKey = storageJdbcRepository.createStorage(storage);
             String jsonResponse = String.format("{\"storage_id\": %d}", generatedKey);
             return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
