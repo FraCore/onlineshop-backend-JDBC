@@ -45,38 +45,38 @@ public class OrderController {
             Date date = new Date();
             Order order = new Order(date, OrderState.OPEN);
             Integer generatedKey = orderJdbcRepository.createOrder(order);
-            String jsonResponse = String.format("{\"order_id\": %d}", generatedKey);
+            String jsonResponse = String.format("{\"orderId\": %d}", generatedKey);
             return new ResponseEntity<>(jsonResponse, HttpStatus.CREATED);
         }catch(SQLException e) {
             logger.error(e.getMessage());
-            return new ResponseEntity<>("An error occurred",HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping(path="/addProduct", consumes = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<String> addProductToOrder(@Valid @RequestBody Position position) {
         try {
-            if (!isProductPresent(position.getProduct_id())) {
-                return new ResponseEntity<>(String.format("Product with id: %d not found", position.getProduct_id()), HttpStatus.NOT_FOUND);
+            if (!isProductPresent(position.getProductId())) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            if (!isOrderOpen(position.getOrder_id())) {
-                return new ResponseEntity<>(String.format("Order with id: %d is closed", position.getOrder_id()), HttpStatus.BAD_REQUEST);
+            if (!isOrderOpen(position.getOrderId())) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            Position existingPosition = findProductForOrder(position.getProduct_id(), position.getOrder_id());
+            Position existingPosition = findProductForOrder(position.getProductId(), position.getOrderId());
             if(existingPosition == null) {
                 Integer generatedKey = positionJdbRepository.createPosition(position);
-                String jsonResponse = String.format("{\"position_id\": %d}", generatedKey);
+                String jsonResponse = String.format("{\"positionId\": %d, \"totalAmount\": %d}", generatedKey, position.getAmount());
                 return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
             }
-            position.setPosition_amount(position.getPosition_amount() + existingPosition.getPosition_amount());
-            positionJdbRepository.updatePosition(position, existingPosition.getPosition_id());
-            String jsonResponse = String.format("{\"position_id\": %d}", existingPosition.getPosition_id());
+            position.setAmount(position.getAmount() + existingPosition.getAmount());
+            positionJdbRepository.updatePosition(position, existingPosition.getId());
+            String jsonResponse = String.format("{\"positionId\": %d, \"totalAmount\": %d}", existingPosition.getId(), position.getAmount());
             return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
 
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
-            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -87,55 +87,55 @@ public class OrderController {
             Position position = positionJdbRepository.findById(positionId);
 
             if (position == null) {
-                return new ResponseEntity<>(String.format("Position with id: %d not found", positionId), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            if (!isOrderOpen(position.getOrder_id())) {
-                return new ResponseEntity<>(String.format("Order with id: %d is closed", position.getOrder_id()), HttpStatus.BAD_REQUEST);
+            if (!isOrderOpen(position.getOrderId())) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             positionJdbRepository.delete(positionId);
-            return new ResponseEntity<>(String.format("Position with id: %d deleted", positionId), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
 
         } catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
-            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping(path="/deleteOrder/{orderId}")
+    @DeleteMapping(path="/deleteOrder/{orderId}")
     public @ResponseBody ResponseEntity<String> deleteOrder(@PathVariable Integer orderId) {
         try {
             if (!isOrderOpen(orderId)) {
-                return new ResponseEntity<>(String.format("Order with id: %d not found or closed", orderId), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             positionJdbRepository.deletePositionsWithOrderId(orderId);
             orderJdbcRepository.deleteOrder((orderId));
-            return new ResponseEntity<>(String.format("Order with id: %d deleted", orderId), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());
-            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping(path="/submitOrder/{orderId}")
     public @ResponseBody ResponseEntity<String> submitOrder(@PathVariable Integer orderId) {
         try {
-            Order order =orderJdbcRepository.findOpenOrderById(orderId);
+            Order order = orderJdbcRepository.findOpenOrderById(orderId);
             if (order == null) {
-                return new ResponseEntity<>(String.format("Order with id: %d not found or closed", orderId), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             //Check for Positions for Order id and get back List with product_id and amount
             List<Position> positions = positionJdbRepository.getPositionsForOrderId(orderId);
 
             //Check products of Lists with total Stock amount
             for(Position position : positions){
-                Integer totalStock = storageJdbcRepository.getTotalStockForProduct(position.getProduct_id());
-                if(totalStock < position.getPosition_amount()){
-                    return new ResponseEntity<>(String.format("Not enough stock for productId: %d", position.getProduct_id()), HttpStatus.BAD_REQUEST);
+                Integer totalStock = storageJdbcRepository.getTotalStockForProduct(position.getProductId());
+                if(totalStock < position.getAmount()){
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
             }
             orderJdbcRepository.submitOrder(positions, orderId);
-            return new ResponseEntity<>(String.format("Order with id: %d submitted", orderId), HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
 
 
         }catch (SQLException sqlException) {

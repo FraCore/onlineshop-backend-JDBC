@@ -78,8 +78,8 @@ public class OrderJdbcRepository implements OrderRepository {
 
             // Reduce amount on Storage for all positions
             for (Position position : positions) {
-                List<Storage> storages = storageRepo.getAllStoragesForId(position.getProduct_id());
-                int requiredAmount = position.getPosition_amount();
+                List<Storage> storages = storageRepo.getAllStoragesForId(position.getProductId());
+                int requiredAmount = position.getAmount();
 
                 for (Storage storage : storages) {
                     if (requiredAmount == 0) {
@@ -129,5 +129,4 @@ public class OrderJdbcRepository implements OrderRepository {
             throw new SQLException("Error processing order: " + e.getMessage());
         }
     }
-
 }

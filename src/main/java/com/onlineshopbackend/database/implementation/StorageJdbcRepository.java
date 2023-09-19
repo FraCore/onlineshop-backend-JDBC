@@ -17,7 +17,6 @@ public class StorageJdbcRepository implements StorageRepository {
         Storage storage = null;
         String sql = "SELECT * FROM storages WHERE storage_id = ?";
 
-
         try(Connection connection = DatabaseConnection.getConnection();
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -120,5 +119,4 @@ public class StorageJdbcRepository implements StorageRepository {
         }
         return storages;
     }
-
 }

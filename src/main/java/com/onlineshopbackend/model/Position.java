@@ -4,61 +4,61 @@ import jakarta.validation.constraints.NotNull;
 
 public class Position {
 
-    private Integer position_id;
+    private Integer id;
 
     @NotNull
-    private Integer position_amount;
+    private Integer amount;
 
     @NotNull
-    private Integer order_id;
+    private Integer orderId;
 
     @NotNull
-    private Integer product_id;
+    private Integer productId;
 
-    public Position(Integer position_id, Integer position_amount, Integer order_id, Integer product_id) {
-        this.position_id = position_id;
-        this.position_amount = position_amount;
-        this.order_id = order_id;
-        this.product_id = product_id;
+    public Position(Integer id, Integer amount, Integer orderId, Integer productId) {
+        this.id = id;
+        this.amount = amount;
+        this.orderId = orderId;
+        this.productId = productId;
     }
 
-    public Position(Integer position_amount, Integer order_id, Integer product_id) {
-        this.position_amount = position_amount;
-        this.order_id = order_id;
-        this.product_id = product_id;
+    public Position(Integer amount, Integer orderId, Integer productId) {
+        this.amount = amount;
+        this.orderId = orderId;
+        this.productId = productId;
     }
     public Position() {}
 
-    public Integer getPosition_amount() {
-        return position_amount;
+    public Integer getAmount() {
+        return amount;
     }
 
-    public void setPosition_amount(Integer position_amount) {
-        this.position_amount = position_amount;
+    public void setAmount(Integer amount) {
+        this.amount = amount;
     }
 
-    public Integer getOrder_id() {
-        return order_id;
+    public Integer getOrderId() {
+        return orderId;
     }
 
-    public void setOrder_id(Integer order_id) {
-        this.order_id = order_id;
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
     }
 
-    public Integer getProduct_id() {
-        return product_id;
+    public Integer getProductId() {
+        return productId;
     }
 
-    public void setProduct_id(Integer product_id) {
-        this.product_id = product_id;
+    public void setProductId(Integer productId) {
+        this.productId = productId;
     }
 
-    public Integer getPosition_id() {
-        return position_id;
+    public Integer getId() {
+        return id;
     }
 
-    public void setPosition_id(Integer position_id) {
-        this.position_id = position_id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 }

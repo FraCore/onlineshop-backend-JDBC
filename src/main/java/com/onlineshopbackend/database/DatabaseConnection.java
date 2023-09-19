@@ -12,6 +12,7 @@ public class DatabaseConnection {
     private static HikariDataSource ds;
 
     static {
+        //Showcase Config
         config.setJdbcUrl("jdbc:mysql://localhost:3306/webshop");
         config.setUsername("root");
 

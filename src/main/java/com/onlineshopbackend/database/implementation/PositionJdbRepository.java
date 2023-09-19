@@ -3,7 +3,6 @@ package com.onlineshopbackend.database.implementation;
 import com.onlineshopbackend.database.DatabaseConnection;
 import com.onlineshopbackend.database.interfaces.PositionRepository;
 import com.onlineshopbackend.model.Position;
-import com.onlineshopbackend.model.Storage;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -20,9 +19,9 @@ public class PositionJdbRepository implements PositionRepository {
         try (Connection connection = DatabaseConnection.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setInt(1, position.getPosition_amount());
-            ps.setInt(2, position.getOrder_id());
-            ps.setInt(3, position.getProduct_id());
+            ps.setInt(1, position.getAmount());
+            ps.setInt(2, position.getOrderId());
+            ps.setInt(3, position.getProductId());
 
             ps.executeUpdate();
 
@@ -43,9 +42,9 @@ public class PositionJdbRepository implements PositionRepository {
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, position.getPosition_amount());
-            ps.setInt(2, position.getOrder_id());
-            ps.setInt(3, position.getProduct_id());
+            ps.setInt(1, position.getAmount());
+            ps.setInt(2, position.getOrderId());
+            ps.setInt(3, position.getProductId());
             ps.setInt(4, positionId);
 
             ps.executeUpdate();
