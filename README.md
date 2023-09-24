@@ -1,5 +1,6 @@
 # onlineshop-backend-JDBC
-Onlineshop Backend with JDBC
+Onlineshop Backend with JDBC <br>
+Coding Project for studies
 
 ## SQL Tables
 
